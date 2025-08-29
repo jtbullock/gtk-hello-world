@@ -11,3 +11,6 @@ gtk-hello-world: gtk-hello-world.c
 
 clean:
 	rm -f gtk-hello-world
+
+run: gtk-hello-world
+	./bin/gtk-hello-world
