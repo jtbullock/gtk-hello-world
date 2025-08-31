@@ -52,6 +52,42 @@ static void set_custom_styles()
   g_object_unref(provider);
 }
 
+static gboolean on_key_press(
+  GtkEventControllerKey *controller,
+  guint keyval,
+  guint keycode,
+  GdkModifierType state,
+  gpointer user_data
+) {
+    static guint sequence[3] = {0}; // Store last 3 keyvals
+    static int index = 0;
+
+    // Store the key
+    sequence[index] = keyval;
+    index = (index + 1) % 3; // Circular buffer
+
+    // Example sequence: Ctrl+Shift+X
+    if ((state & GDK_CONTROL_MASK) && (state & GDK_SHIFT_MASK) && keyval == GDK_KEY_R) {
+        g_print("Ctrl+Shift+R pressed!\n");
+    }
+
+    // Example sequence: Up, Up, Down
+    //if (sequence[0] == GDK_KEY_Up &&
+    //    sequence[1] == GDK_KEY_Up &&
+    //    sequence[2] == GDK_KEY_Down) {
+    //    g_print("Up, Up, Down sequence detected!\n");
+    //}
+
+    return GDK_EVENT_PROPAGATE; // Pass event on to other handlers
+}
+
+static void init_key_monitoring(GtkWidget* window)
+{
+    GtkEventController *key_controller = gtk_event_controller_key_new();
+    g_signal_connect(key_controller, "key-pressed", G_CALLBACK(on_key_press), NULL);
+    gtk_widget_add_controller(window, key_controller);
+}
+
 static void activate (GtkApplication *app, gpointer user_data)
 {
   GtkWidget *window = build_window(app);
@@ -59,6 +95,8 @@ static void activate (GtkApplication *app, gpointer user_data)
 
   set_reset_styles();
   //set_custom_styles();
+
+  init_key_monitoring(window);
 
   button = gtk_button_new_with_label ("Hello World");
   g_signal_connect (button, "clicked", G_CALLBACK (print_hello), NULL);
