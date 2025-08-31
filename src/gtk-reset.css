@@ -1,0 +1,40 @@
+/* Apply to everything: remove extra spacing & borders */
+* {
+    border: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* Standardize text colors & backgrounds to neutral */
+window, dialog, popover, menu {
+    background:none;
+    background-color: black;
+    color: #000000;
+}
+
+/* Normalize buttons: remove theme-specific gradients/borders */
+button {
+    background: none;
+    background-color:red;
+    border-radius: 0;
+}
+
+/* Labels: inherit color, no shadows */
+label {
+    color: inherit;
+    text-shadow: none;
+}
+
+/* Entry fields: basic border for visibility */
+entry {
+    border: 1px solid #ccc;
+    background: #ffffff;
+    color: #000000;
+}
+
+/* Ensure images/icons aren’t tinted by theme */
+image, icon {
+    color: inherit;
+}
+

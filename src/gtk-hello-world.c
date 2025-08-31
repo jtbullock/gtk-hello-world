@@ -24,10 +24,41 @@ static GtkWidget* build_video() {
     return video;
 }
 
+static void set_reset_styles()
+{
+  GtkCssProvider *provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_path(provider, "src/gtk-reset.css");
+
+  gtk_style_context_add_provider_for_display(
+      gdk_display_get_default(),
+      GTK_STYLE_PROVIDER(provider),
+      GTK_STYLE_PROVIDER_PRIORITY_FALLBACK
+  );
+
+  g_object_unref(provider);
+} 
+
+static void set_custom_styles()
+{
+  GtkCssProvider *provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_path(provider, "src/style.css");
+
+  gtk_style_context_add_provider_for_display(
+      gdk_display_get_default(),
+      GTK_STYLE_PROVIDER(provider),
+      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+  );
+
+  g_object_unref(provider);
+}
+
 static void activate (GtkApplication *app, gpointer user_data)
 {
   GtkWidget *window = build_window(app);
   GtkWidget *button;
+
+  set_reset_styles();
+  //set_custom_styles();
 
   button = gtk_button_new_with_label ("Hello World");
   g_signal_connect (button, "clicked", G_CALLBACK (print_hello), NULL);
@@ -39,7 +70,7 @@ static void activate (GtkApplication *app, gpointer user_data)
   //g_object_unref (file); // Release the GFile object
   GtkWidget *video = build_video();
 
-  gtk_window_set_child (GTK_WINDOW (window), image);
+  gtk_window_set_child (GTK_WINDOW (window), button);
   gtk_window_present (GTK_WINDOW (window));
 }
 
@@ -50,6 +81,7 @@ int main (int argc, char **argv)
 
   app = gtk_application_new ("org.gtk.example", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+
   status = g_application_run (G_APPLICATION (app), argc, argv);
   g_object_unref (app);
 
