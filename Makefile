@@ -26,4 +26,4 @@ run: $(TARGET)
 	$(TARGET)
 
 watch: 
-	watchexec -r -e c,h,css "make run"
+	watchexec -r -e c,h "make run"

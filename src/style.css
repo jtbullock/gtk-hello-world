@@ -1,6 +1,8 @@
 button {
+    margin:1em;
     background-color: #3498db;
     color: red;
+    border: solid 1px red;
 }
 
 window {

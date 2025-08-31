@@ -1,5 +1,8 @@
 #include <gtk/gtk.h>
 
+static GtkCssProvider *reset_style_provider = NULL;
+static GtkCssProvider *custom_style_provider = NULL;
+
 static void print_hello (GtkWidget *widget, gpointer data)
 {
   g_print ("Hello World\n");
@@ -26,30 +29,37 @@ static GtkWidget* build_video() {
 
 static void set_reset_styles()
 {
-  GtkCssProvider *provider = gtk_css_provider_new();
-  gtk_css_provider_load_from_path(provider, "src/gtk-reset.css");
+  if( reset_style_provider == NULL ) {
+    reset_style_provider = gtk_css_provider_new();
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(reset_style_provider),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
+    );
+  }
 
-  gtk_style_context_add_provider_for_display(
-      gdk_display_get_default(),
-      GTK_STYLE_PROVIDER(provider),
-      GTK_STYLE_PROVIDER_PRIORITY_USER
-  );
-
-  g_object_unref(provider);
+  gtk_css_provider_load_from_path(reset_style_provider, "src/gtk-reset.css");
 } 
 
 static void set_custom_styles()
 {
-  GtkCssProvider *provider = gtk_css_provider_new();
-  gtk_css_provider_load_from_path(provider, "src/style.css");
+  if(custom_style_provider == NULL) {
+    custom_style_provider = gtk_css_provider_new();
+    gtk_style_context_add_provider_for_display(
+        gdk_display_get_default(),
+        GTK_STYLE_PROVIDER(custom_style_provider),
+        GTK_STYLE_PROVIDER_PRIORITY_USER
+    );
+  }
 
-  gtk_style_context_add_provider_for_display(
-      gdk_display_get_default(),
-      GTK_STYLE_PROVIDER(provider),
-      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
-  );
+  gtk_css_provider_load_from_path(custom_style_provider, "src/style.css");
 
-  g_object_unref(provider);
+}
+
+static void set_css_styles()
+{
+  set_reset_styles();
+  set_custom_styles();  
 }
 
 static gboolean on_key_press(
@@ -68,7 +78,8 @@ static gboolean on_key_press(
 
     // Example sequence: Ctrl+Shift+X
     if ((state & GDK_CONTROL_MASK) && (state & GDK_SHIFT_MASK) && keyval == GDK_KEY_R) {
-        g_print("Ctrl+Shift+R pressed!\n");
+       set_css_styles();
+       g_print("Ctrl+Shift+R pressed, setting css styles.\n");
     }
 
     // Example sequence: Up, Up, Down
@@ -93,8 +104,7 @@ static void activate (GtkApplication *app, gpointer user_data)
   GtkWidget *window = build_window(app);
   GtkWidget *button;
 
-  set_reset_styles();
-  //set_custom_styles();
+  set_css_styles();
 
   init_key_monitoring(window);
 
