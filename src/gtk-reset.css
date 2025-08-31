@@ -8,15 +8,15 @@
 
 /* Standardize text colors & backgrounds to neutral */
 window, dialog, popover, menu {
-    background:none;
-    background-color: black;
+    background: none;
+    background-color: #FFFFFF;
     color: #000000;
 }
 
 /* Normalize buttons: remove theme-specific gradients/borders */
 button {
+    color: inherit;
     background: none;
-    background-color:red;
     border-radius: 0;
 }
 
