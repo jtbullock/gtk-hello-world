@@ -1,6 +1,6 @@
 CC     = cc
-CFLAGS = $(shell pkgconf --cflags gtk4)
-LIBS   = $(shell pkgconf --libs gtk4)
+CFLAGS = $(shell pkg-config --cflags gtk4)
+LIBS   = $(shell pkg-config --libs gtk4)
 
 SRC_DIR   := src
 BIN_DIR   := bin

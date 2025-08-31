@@ -9,3 +9,4 @@ This is my playground project for learning gtk4 and experimenting with using it 
 ## Dependencies
 
 * gtk4
+* pkg-config 
