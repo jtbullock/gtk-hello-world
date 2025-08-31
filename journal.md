@@ -6,6 +6,10 @@
   * I also got the gstreamer-hello-world makefile to produce the `compile_commands.json`, which is cool!
   * ChatGPT gave me a great starting point for integrating gstreamer and gtk: https://chatgpt.com/share/68b46df3-b1a0-8003-9de2-f7b41169e09c
 
+  * Screwed around a bunch with customizing my prompt line in bash.
+  * Got my project running on little mac
+  * Got CSS styles working
+
 ## 08/29/25 - Initial Development
   * Generated a Makefile using build command from gtk tutorial: https://docs.gtk.org/gtk4/getting_started.html#hello-world-in-c
   * ChatGPT had a great script for auto-generating `compile_commands.json`. This makes Helix's clangd integration happy so it gives us code complete and navigation.
