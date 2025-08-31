@@ -32,7 +32,7 @@ static void set_reset_styles()
   gtk_style_context_add_provider_for_display(
       gdk_display_get_default(),
       GTK_STYLE_PROVIDER(provider),
-      GTK_STYLE_PROVIDER_PRIORITY_FALLBACK
+      GTK_STYLE_PROVIDER_PRIORITY_USER
   );
 
   g_object_unref(provider);
