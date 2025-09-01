@@ -60,12 +60,12 @@ static void set_css_styles() {
 static gboolean on_key_press(GtkEventControllerKey *controller, guint keyval,
                              guint keycode, GdkModifierType state,
                              gpointer user_data) {
-  static guint sequence[3] = {0}; // Store last 3 keyvals
+  static guint sequence[3] = {0};  // Store last 3 keyvals
   static int index = 0;
 
   // Store the key
   sequence[index] = keyval;
-  index = (index + 1) % 3; // Circular buffer
+  index = (index + 1) % 3;  // Circular buffer
 
   // Example sequence: Ctrl+Shift+X
   if ((state & GDK_CONTROL_MASK) && (state & GDK_SHIFT_MASK) &&
@@ -81,7 +81,7 @@ static gboolean on_key_press(GtkEventControllerKey *controller, guint keyval,
   //    g_print("Up, Up, Down sequence detected!\n");
   //}
 
-  return GDK_EVENT_PROPAGATE; // Pass event on to other handlers
+  return GDK_EVENT_PROPAGATE;  // Pass event on to other handlers
 }
 
 static void init_key_monitoring(GtkWidget *window) {
