@@ -1,4 +1,6 @@
 #include <gtk/gtk.h>
+#include <stdio.h>
+#include <dirent.h>
 
 static GtkCssProvider *reset_style_provider = NULL;
 static GtkCssProvider *custom_style_provider = NULL;
@@ -99,6 +101,24 @@ static void init_key_monitoring(GtkWidget* window)
     gtk_widget_add_controller(window, key_controller);
 }
 
+static GtkWidget* directory_list() {
+  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+
+  gtk_box_append((GtkBox*)box, gtk_label_new("Thing 1"));
+  gtk_box_append((GtkBox*)box, gtk_label_new("Thing 2"));
+  gtk_box_append((GtkBox*)box, gtk_label_new("Thing 3"));
+  
+  return box;
+}
+
+static void video_player() {
+  //GtkWidget *video = gtk_video_new_for_filename( "test-vid-2.mp4" );
+  //GFile *file = g_file_new_for_path ("test-vid.mp4");
+  //GtkWidget *video = gtk_video_new_for_file (file);
+  //g_object_unref (file); // Release the GFile object
+  //GtkWidget *video = build_video();
+}
+
 static void activate (GtkApplication *app, gpointer user_data)
 {
   GtkWidget *window = build_window(app);
@@ -112,18 +132,30 @@ static void activate (GtkApplication *app, gpointer user_data)
   g_signal_connect (button, "clicked", G_CALLBACK (print_hello), NULL);
 
   GtkWidget *image = gtk_image_new_from_file ("assets/buppies.jpg");
-  //GtkWidget *video = gtk_video_new_for_filename( "test-vid-2.mp4" );
-  //GFile *file = g_file_new_for_path ("test-vid.mp4");
-  //GtkWidget *video = gtk_video_new_for_file (file);
-  //g_object_unref (file); // Release the GFile object
-  GtkWidget *video = build_video();
-
-  gtk_window_set_child (GTK_WINDOW (window), button);
+  gtk_window_set_child (GTK_WINDOW (window), directory_list());
   gtk_window_present (GTK_WINDOW (window));
+}
+
+static void print_home() {
+  const char *path = "/Users/joshbullock"; 
+  struct dirent *entry;
+  DIR *dir = opendir(path);
+
+  if (dir == NULL) {
+      perror("opendir");
+  }
+
+  while ((entry = readdir(dir)) != NULL) {
+      g_print("%s\n", entry->d_name);
+  }
+
+  closedir(dir);
 }
 
 int main (int argc, char **argv)
 {
+  print_home();
+  
   GtkApplication *app;
   int status;
 
