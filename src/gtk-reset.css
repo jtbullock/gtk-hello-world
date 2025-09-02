@@ -1,40 +1,43 @@
 /* Apply to everything: remove extra spacing & borders */
 * {
-    border: none;
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 /* Standardize text colors & backgrounds to neutral */
-window, dialog, popover, menu {
-    background: none;
-    background-color: #FFFFFF;
-    color: #000000;
+window,
+dialog,
+popover,
+menu {
+  background: none;
+  background-color: #000000;
+  color: #FFFFFF;
 }
 
 /* Normalize buttons: remove theme-specific gradients/borders */
 button {
-    color: inherit;
-    background: none;
-    border-radius: 0;
+  color: inherit;
+  background: none;
+  border-radius: 0;
 }
 
 /* Labels: inherit color, no shadows */
 label {
-    color: inherit;
-    text-shadow: none;
+  color: inherit;
+  text-shadow: none;
 }
 
 /* Entry fields: basic border for visibility */
 entry {
-    border: 1px solid #ccc;
-    background: #ffffff;
-    color: #000000;
+  border: 1px solid #ccc;
+  background: #000000;
+  color: #ffffff;
 }
 
 /* Ensure images/icons aren’t tinted by theme */
-image, icon {
-    color: inherit;
+image,
+icon {
+  color: inherit;
 }
-

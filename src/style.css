@@ -1,4 +1,8 @@
-button:hover {
-    background-color:gray;
+body {
+  background-color: black;
+  color: white;
 }
 
+button:hover {
+  background-color: gray;
+}
