@@ -40,20 +40,6 @@ static void t_gtk_string_list_foreach(GtkStringList *list, StringFunc func) {
   }
 }
 
-static void t_g_list_model_foreach_d(GListModel *list, StringFuncD func,
-                                     gpointer user_data) {
-  uint i = 0;
-  while (true) {
-    const char *v = gtk_string_list_get_string(list, i);
-    i++;
-
-    if (v != NULL)
-      func(v, user_data);
-    else
-      break;
-  }
-}
-
 // ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│ App Styling Setup                                                    ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
@@ -130,22 +116,23 @@ static void init_key_monitoring(GtkWidget *window) {
 // ║│ External Resources                                                   ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
 
-static GtkStringList *get_home_contents() {
+static gint compare_strings(gconstpointer a, gconstpointer b) {
+  return g_strcmp0((const char *)a, (const char *)b);
+}
+
+static GList *get_home_contents() {
   DIR *dir = opendir("/Users/josh");
-  GtkStringList *string_list = gtk_string_list_new(NULL);
+  GList *string_list = NULL;
 
   struct dirent *entry;
   while ((entry = readdir(dir)) != NULL) {
-    gtk_string_list_append(string_list, entry->d_name);
+    string_list = g_list_append(string_list, g_strdup(entry->d_name));
   }
 
   closedir(dir);
-  return string_list;
-}
+  string_list = g_list_sort(string_list, compare_strings);
 
-static GListModel *sort_gtk_string_list(GtkStringList *string_list) {
-  return G_LIST_MODEL(gtk_sort_list_model_new(
-      G_LIST_MODEL(string_list), GTK_SORTER(gtk_string_sorter_new(NULL))));
+  return string_list;
 }
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
@@ -154,12 +141,14 @@ static GListModel *sort_gtk_string_list(GtkStringList *string_list) {
 
 static void print_hello() { g_print("Hello World\n"); }
 
-static void print_string(const char *string) { g_print("%s\n", string); }
+static void t_thing(gpointer data, gpointer user_data) {
+  g_print("%s\n", (char *)data);
+}
 
 static void print_home() {
-  GtkStringList *dirs = get_home_contents();
-  t_gtk_string_list_foreach(dirs, print_string);
-  g_object_unref(dirs);
+  GList *dirs = get_home_contents();
+  g_list_foreach(dirs, t_thing, NULL);
+  g_clear_list(&dirs, (GDestroyNotify)g_free);
 }
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
@@ -187,23 +176,16 @@ static GtkWidget *build_video() {
   return video;
 }
 
-static void appendToBox(const char *text, gpointer box) {
-  gtk_box_append((GtkBox *)box, gtk_label_new(text));
+static void appendToBox(gpointer text, gpointer box) {
+  gtk_box_append((GtkBox *)box, gtk_label_new((char *)text));
 }
 
 static GtkWidget *directory_list() {
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
-  GListModel *dir_names = sort_gtk_string_list(get_home_contents());
+  GList *dir_names = get_home_contents();
 
-  g_list_foreach(G_LIST(dir_names), GFunc func, gpointer user_data)
-
-      //  void gtk_list_model_foreach(GListModel * model, GListModelForeachFunc
-      //  func,
-      //                           gpointer user_data);
-
-      // t_gtk_string_list_foreach_d(dir_names, appendToBox, box);
-
-      g_object_unref(dir_names);
+  g_list_foreach(dir_names, appendToBox, box);
+  g_clear_list(&dir_names, (GDestroyNotify)g_free);
 
   GtkWidget *sw = gtk_scrolled_window_new();
   gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(sw), box);
