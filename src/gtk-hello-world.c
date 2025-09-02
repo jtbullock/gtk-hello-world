@@ -2,6 +2,8 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+#include "glib-object.h"
+
 // ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│  App Styling Setup                                                   ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
@@ -82,20 +84,33 @@ static void print_hello(GtkWidget *widget, gpointer data) {
   g_print("Hello World\n");
 }
 
-static void print_home() {
-  const char *path = "/Users/josh";
+static GListModel *get_home_contents() {
+  DIR *dir = opendir("/Users/josh");
+  GListStore *store = g_list_store_new(G_TYPE_STRING);
+
   struct dirent *entry;
-  DIR *dir = opendir(path);
-
-  if (dir == NULL) {
-    perror("opendir");
-  }
-
   while ((entry = readdir(dir)) != NULL) {
-    g_print("%s\n", entry->d_name);
+    g_list_store_append(store, entry->d_name);
   }
 
   closedir(dir);
+  return G_LIST_MODEL(store);
+}
+
+static void print_home() {
+  GListModel *dirs = get_home_contents();
+  GString *dir_name;
+  uint i = 0;
+
+  while (true) {
+    GString *dir_name = g_list_model_get_item(dirs, i);
+    i++;
+
+    if (dir_name != NULL)
+      g_print("%s\n", dir_name->str);
+    else
+      break;
+  }
 }
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
