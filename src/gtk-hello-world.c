@@ -77,6 +77,23 @@ static void init_key_monitoring(GtkWidget *window) {
 }
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
+// ║│ External Resources                                                   ║
+// ╚╧══════════════════════════════════════════════════════════════════════╝
+
+static GtkStringList *get_home_contents() {
+  DIR *dir = opendir("/Users/josh");
+  GtkStringList *string_list = gtk_string_list_new(NULL);
+
+  struct dirent *entry;
+  while ((entry = readdir(dir)) != NULL) {
+    gtk_string_list_append(string_list, entry->d_name);
+  }
+
+  closedir(dir);
+  return string_list;
+}
+
+// ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│ Debugging/Console                                                    ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
 
@@ -84,30 +101,16 @@ static void print_hello(GtkWidget *widget, gpointer data) {
   g_print("Hello World\n");
 }
 
-static GListModel *get_home_contents() {
-  DIR *dir = opendir("/Users/josh");
-  GListStore *store = g_list_store_new(G_TYPE_STRING);
-
-  struct dirent *entry;
-  while ((entry = readdir(dir)) != NULL) {
-    g_list_store_append(store, entry->d_name);
-  }
-
-  closedir(dir);
-  return G_LIST_MODEL(store);
-}
-
 static void print_home() {
-  GListModel *dirs = get_home_contents();
-  GString *dir_name;
+  GtkStringList *dirs = get_home_contents();
   uint i = 0;
 
   while (true) {
-    GString *dir_name = g_list_model_get_item(dirs, i);
+    const char *dir_name = gtk_string_list_get_string(dirs, i);
     i++;
 
     if (dir_name != NULL)
-      g_print("%s\n", dir_name->str);
+      g_print("%s\n", dir_name);
     else
       break;
   }
