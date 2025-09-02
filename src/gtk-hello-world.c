@@ -40,6 +40,20 @@ static void t_gtk_string_list_foreach(GtkStringList *list, StringFunc func) {
   }
 }
 
+static void t_g_list_model_foreach_d(GListModel *list, StringFuncD func,
+                                     gpointer user_data) {
+  uint i = 0;
+  while (true) {
+    const char *v = gtk_string_list_get_string(list, i);
+    i++;
+
+    if (v != NULL)
+      func(v, user_data);
+    else
+      break;
+  }
+}
+
 // ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│ App Styling Setup                                                    ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
@@ -129,6 +143,11 @@ static GtkStringList *get_home_contents() {
   return string_list;
 }
 
+static GListModel *sort_gtk_string_list(GtkStringList *string_list) {
+  return G_LIST_MODEL(gtk_sort_list_model_new(
+      G_LIST_MODEL(string_list), GTK_SORTER(gtk_string_sorter_new(NULL))));
+}
+
 // ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│ Debugging/Console                                                    ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
@@ -174,12 +193,22 @@ static void appendToBox(const char *text, gpointer box) {
 
 static GtkWidget *directory_list() {
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
-  GtkStringList *dir_names = get_home_contents();
+  GListModel *dir_names = sort_gtk_string_list(get_home_contents());
 
-  t_gtk_string_list_foreach_d(dir_names, appendToBox, box);
+  g_list_foreach(G_LIST(dir_names), GFunc func, gpointer user_data)
 
-  g_object_unref(dir_names);
-  return box;
+      //  void gtk_list_model_foreach(GListModel * model, GListModelForeachFunc
+      //  func,
+      //                           gpointer user_data);
+
+      // t_gtk_string_list_foreach_d(dir_names, appendToBox, box);
+
+      g_object_unref(dir_names);
+
+  GtkWidget *sw = gtk_scrolled_window_new();
+  gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(sw), box);
+
+  return sw;
 }
 
 static void video_player() {
