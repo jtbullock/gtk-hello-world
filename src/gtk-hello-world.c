@@ -2,33 +2,12 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
+// ╔╤══════════════════════════════════════════════════════════════════════╗
+// ║│  App Styling Setup                                                   ║
+// ╚╧══════════════════════════════════════════════════════════════════════╝
+
 static GtkCssProvider *reset_style_provider = NULL;
 static GtkCssProvider *custom_style_provider = NULL;
-
-static void print_hello(GtkWidget *widget, gpointer data) {
-  g_print("Hello World\n");
-}
-
-static GtkWidget *build_window(GtkApplication *app) {
-  GtkWidget *window = gtk_application_window_new(app);
-  gtk_window_set_title(GTK_WINDOW(window), "Hello");
-  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-  return window;
-}
-
-static GtkWidget *build_video() {
-  // Create a GtkVideo widget
-  GtkWidget *video = gtk_video_new();
-  const char *utf8Filename = "test-vid.mp4";
-  gchar *glibEncodedFilename =
-      g_filename_from_utf8(utf8Filename, -1, NULL, NULL, NULL);
-  // Load a video file
-  gtk_video_set_file(GTK_VIDEO(video),
-                     g_file_new_for_path(glibEncodedFilename));
-  // start the video if visible
-  gtk_video_set_autoplay(GTK_VIDEO(video), TRUE);
-  return video;
-}
 
 static void set_reset_styles() {
   if (reset_style_provider == NULL) {
@@ -56,6 +35,10 @@ static void set_css_styles() {
   set_reset_styles();
   set_custom_styles();
 }
+
+// ╔╤══════════════════════════════════════════════════════════════════════╗
+// ║│ Keyboard handling                                                    ║
+// ╚╧══════════════════════════════════════════════════════════════════════╝
 
 static gboolean on_key_press(GtkEventControllerKey *controller, guint keyval,
                              guint keycode, GdkModifierType state,
@@ -91,6 +74,55 @@ static void init_key_monitoring(GtkWidget *window) {
   gtk_widget_add_controller(window, key_controller);
 }
 
+// ╔╤══════════════════════════════════════════════════════════════════════╗
+// ║│ Debugging/Console                                                    ║
+// ╚╧══════════════════════════════════════════════════════════════════════╝
+
+static void print_hello(GtkWidget *widget, gpointer data) {
+  g_print("Hello World\n");
+}
+
+static void print_home() {
+  const char *path = "/Users/josh";
+  struct dirent *entry;
+  DIR *dir = opendir(path);
+
+  if (dir == NULL) {
+    perror("opendir");
+  }
+
+  while ((entry = readdir(dir)) != NULL) {
+    g_print("%s\n", entry->d_name);
+  }
+
+  closedir(dir);
+}
+
+// ╔╤══════════════════════════════════════════════════════════════════════╗
+// ║│ Widgets                                                              ║
+// ╚╧══════════════════════════════════════════════════════════════════════╝
+
+static GtkWidget *build_window(GtkApplication *app) {
+  GtkWidget *window = gtk_application_window_new(app);
+  gtk_window_set_title(GTK_WINDOW(window), "Hello");
+  gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
+  return window;
+}
+
+static GtkWidget *build_video() {
+  // Create a GtkVideo widget
+  GtkWidget *video = gtk_video_new();
+  const char *utf8Filename = "test-vid.mp4";
+  gchar *glibEncodedFilename =
+      g_filename_from_utf8(utf8Filename, -1, NULL, NULL, NULL);
+  // Load a video file
+  gtk_video_set_file(GTK_VIDEO(video),
+                     g_file_new_for_path(glibEncodedFilename));
+  // start the video if visible
+  gtk_video_set_autoplay(GTK_VIDEO(video), TRUE);
+  return video;
+}
+
 static GtkWidget *directory_list() {
   GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
 
@@ -109,6 +141,9 @@ static void video_player() {
   // GtkWidget *video = build_video();
 }
 
+// ╔╤◇════════════════════════════════════════════════════════════════════◇╗
+// ╚╧◇════════════════════════════════════════════════════════════════════◇╝
+
 static void activate(GtkApplication *app, gpointer user_data) {
   GtkWidget *window = build_window(app);
   GtkWidget *button;
@@ -123,22 +158,6 @@ static void activate(GtkApplication *app, gpointer user_data) {
   GtkWidget *image = gtk_image_new_from_file("assets/buppies.jpg");
   gtk_window_set_child(GTK_WINDOW(window), directory_list());
   gtk_window_present(GTK_WINDOW(window));
-}
-
-static void print_home() {
-  const char *path = "/Users/joshbullock";
-  struct dirent *entry;
-  DIR *dir = opendir(path);
-
-  if (dir == NULL) {
-    perror("opendir");
-  }
-
-  while ((entry = readdir(dir)) != NULL) {
-    g_print("%s\n", entry->d_name);
-  }
-
-  closedir(dir);
 }
 
 int main(int argc, char **argv) {

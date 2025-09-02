@@ -1,5 +1,8 @@
 # Development Log
 
+## 09/01/25 - Fiddling around
+  * Worked on making a homepage, hooked up `brew install vscode-langservers-extracted` into Helix.
+
 ## 08/31/25 - Makefile and clangd, time to work in gstreamer
   * I created a separate gstreamer hello world application which successfully played back a video.
   * I learned a ton about Makefiles and have one I'm happy with in the gstreamer-hello-world project. It was challenging to get the build flags in there because pkg-config required some environment variables, which make has some oddities around.

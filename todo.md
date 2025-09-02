@@ -8,4 +8,8 @@
 * Integrate gstreamer with gtk4 - https://chatgpt.com/share/68b46df3-b1a0-8003-9de2-f7b41169e09c
 * Learn more about gstreamer, specifically pipelines, by following tutorial: https://gstreamer.freedesktop.org/documentation/tutorials/basic/hello-world.html?gi-language=c
 
+### Environment
+
+* Get snippets working, https://www.reddit.com/r/HelixEditor/comments/1hv9nle/snippets_in_the_new_version/
+
 ## Done
