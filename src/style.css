@@ -10,15 +10,14 @@ button:hover {
 }
 
 label {
-  pointer-events: auto;
   /*background-color: darkgreen;*/
   padding: 0.5em;
   font-size: 24pt;
 }
 
 label:hover {
-  background-color: darkblue;
-  cursor: pointer;
+  background-color: #500c99;
+  /*padding-left: 0.7em;*/
 }
 
 /*box {
