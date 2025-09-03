@@ -9,13 +9,13 @@ button:hover {
   background-color: gray;
 }
 
-label {
+button {
   /*background-color: darkgreen;*/
   padding: 0.5em;
   font-size: 24pt;
 }
 
-label:hover {
+button:hover {
   background-color: #500c99;
   /*padding-left: 0.7em;*/
 }
