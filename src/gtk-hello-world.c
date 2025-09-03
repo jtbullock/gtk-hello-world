@@ -9,35 +9,12 @@
 // ║│ Utils                                                                ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
 
-typedef void(StringFunc)(const char *);
-typedef void(StringFuncD)(const char *, gpointer user_data);
-
-static void t_gtk_string_list_foreach_d(GtkStringList *list, StringFuncD func,
-                                        gpointer user_data) {
-  uint i = 0;
-  while (true) {
-    const char *v = gtk_string_list_get_string(list, i);
-    i++;
-
-    if (v != NULL)
-      func(v, user_data);
-    else
-      break;
-  }
+static gint compare_strings(gconstpointer a, gconstpointer b) {
+  return g_strcmp0((const char *)a, (const char *)b);
 }
 
-static void t_gtk_string_list_foreach(GtkStringList *list, StringFunc func) {
-  uint i = 0;
-
-  while (true) {
-    const char *v = gtk_string_list_get_string(list, i);
-    i++;
-
-    if (v != NULL)
-      func(v);
-    else
-      break;
-  }
+bool string_starts_with(const char *prefix, const char *str) {
+  return strncmp(prefix, str, strlen(prefix)) == 0;
 }
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
@@ -116,17 +93,16 @@ static void init_key_monitoring(GtkWidget *window) {
 // ║│ External Resources                                                   ║
 // ╚╧══════════════════════════════════════════════════════════════════════╝
 
-static gint compare_strings(gconstpointer a, gconstpointer b) {
-  return g_strcmp0((const char *)a, (const char *)b);
-}
-
 static GList *get_home_contents() {
   DIR *dir = opendir("/Users/josh");
   GList *string_list = NULL;
 
   struct dirent *entry;
   while ((entry = readdir(dir)) != NULL) {
-    string_list = g_list_append(string_list, g_strdup(entry->d_name));
+    char *dir_name = entry->d_name;
+    if (!string_starts_with(".", dir_name)) {
+      string_list = g_list_append(string_list, g_strdup(entry->d_name));
+    }
   }
 
   closedir(dir);
@@ -140,16 +116,6 @@ static GList *get_home_contents() {
 // ╚╧══════════════════════════════════════════════════════════════════════╝
 
 static void print_hello() { g_print("Hello World\n"); }
-
-static void t_thing(gpointer data, gpointer user_data) {
-  g_print("%s\n", (char *)data);
-}
-
-static void print_home() {
-  GList *dirs = get_home_contents();
-  g_list_foreach(dirs, t_thing, NULL);
-  g_clear_list(&dirs, (GDestroyNotify)g_free);
-}
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│ Widgets                                                              ║
@@ -176,12 +142,24 @@ static GtkWidget *build_video() {
   return video;
 }
 
+static void on_label_clicked(GtkGestureClick *gesture, int n_press, double x,
+                             double y, gpointer user_data) {
+  g_print("Label clicked at (%.0f x %.0f) with %d presses\n", x, y, n_press);
+}
+
 static void appendToBox(gpointer text, gpointer box) {
-  gtk_box_append((GtkBox *)box, gtk_label_new((char *)text));
+  GtkWidget *label = gtk_label_new((char *)text);
+  GtkGesture *click = gtk_gesture_click_new();
+
+  gtk_label_set_xalign(GTK_LABEL(label), 0.0f);
+  g_signal_connect(click, "pressed", G_CALLBACK(on_label_clicked), NULL);
+  gtk_widget_add_controller(label, GTK_EVENT_CONTROLLER(click));
+
+  gtk_box_append((GtkBox *)box, label);
 }
 
 static GtkWidget *directory_list() {
-  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+  GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   GList *dir_names = get_home_contents();
 
   g_list_foreach(dir_names, appendToBox, box);
@@ -221,8 +199,6 @@ static void activate(GtkApplication *app, gpointer user_data) {
 }
 
 int main(int argc, char **argv) {
-  print_home();
-
   GtkApplication *app;
   int status;
 

@@ -1,8 +1,26 @@
 body {
   background-color: black;
   color: white;
+  font-family: "Mulish";
+  font-size: 16pt;
 }
 
 button:hover {
   background-color: gray;
 }
+
+label {
+  pointer-events: auto;
+  /*background-color: darkgreen;*/
+  padding: 0.5em;
+  font-size: 24pt;
+}
+
+label:hover {
+  background-color: darkblue;
+  cursor: pointer;
+}
+
+/*box {
+  border: solid 2px white;
+}*/
