@@ -1,10 +1,10 @@
 #include <dirent.h>
+#include <gio/gio.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
 
 #include "glib-object.h"
-#include <glib.h>
-#include <gio/gio.h>
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
 // ║│ Utils                                                                ║
@@ -107,6 +107,12 @@ struct TFileInfo *file_info_new(const char *name, bool is_dir) {
     return f;
 }
 
+static gint file_info_compare(gconstpointer f1, gconstpointer f2) {
+    TFileInfo *_f1 = (TFileInfo *)f1;
+    TFileInfo *_f2 = (TFileInfo *)f2;
+    return compare_strings(_f1->name, (_f2->name));
+}
+
 static GList *get_home_contents() {
     GFile *dir = g_file_new_for_path("/");
     const char *attributes =
@@ -122,8 +128,9 @@ static GList *get_home_contents() {
         if (info == NULL) break;
 
         const char *name = g_file_info_get_name(info);
-        if (name == NULL || string_starts_with(".", name)) break;
-        
+        if (name == NULL) break;
+        if (string_starts_with(".", name)) continue;
+
         bool is_dir = g_file_info_get_file_type(info) == G_FILE_TYPE_DIRECTORY;
         TFileInfo *file = file_info_new(name, is_dir);
         file_list = g_list_append(file_list, file);
@@ -134,12 +141,9 @@ static GList *get_home_contents() {
     g_object_unref(enumerator);
     g_object_unref(dir);
 
-    // string_list = g_list_sort(string_list, compare_strings);
-    // 
+    file_list = g_list_sort(file_list, file_info_compare);
+
     return file_list;
-
-
-    // return string_list;
 }
 
 // ╔╤══════════════════════════════════════════════════════════════════════╗
