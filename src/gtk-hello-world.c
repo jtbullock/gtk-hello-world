@@ -128,7 +128,7 @@ static GList *get_home_contents() {
         if (info == NULL) break;
 
         const char *name = g_file_info_get_name(info);
-        if (name == NULL || string_starts_with(".", name)) break;
+        if (name == NULL || string_starts_with(".", name)) continue;
 
         bool is_dir = g_file_info_get_file_type(info) == G_FILE_TYPE_DIRECTORY;
         TFileInfo *file = file_info_new(name, is_dir);
