@@ -5,6 +5,10 @@ body {
   font-size: 16pt;
 }
 
+label {
+  margin-left: 0.15em;
+}
+
 button:hover {
   background-color: gray;
 }
