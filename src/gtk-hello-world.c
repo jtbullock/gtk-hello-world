@@ -113,8 +113,8 @@ static gint file_info_compare(gconstpointer f1, gconstpointer f2) {
     return compare_strings(_f1->name, (_f2->name));
 }
 
-static GList *get_home_contents() {
-    GFile *dir = g_file_new_for_path("/");
+static GList *get_directory_contents(const char *path) {
+    GFile *dir = g_file_new_for_path(path);
     const char *attributes =
         G_FILE_ATTRIBUTE_STANDARD_NAME "," G_FILE_ATTRIBUTE_STANDARD_TYPE;
     GFileEnumerator *enumerator = g_file_enumerate_children(
@@ -176,16 +176,16 @@ static GtkWidget *build_video() {
     return video;
 }
 
-static void on_label_clicked(GtkGestureClick *gesture, int n_press, double x,
-                             double y, gpointer user_data) {
-    g_print("Label clicked at (%.0f x %.0f) with %d presses\n", x, y, n_press);
-}
-
 static GtkWidget *folder_icon() {
     GtkWidget *picture = gtk_picture_new_for_filename("icon-folder.svg");
     //  gtk_widget_set_size_request(GTK_WIDGET(picture), 100, 100); // Optional:
     //  Set the desired size
     return picture;
+}
+
+static void on_button_clicked(GtkWidget *widget, gpointer data) {
+    TFileInfo *f = (TFileInfo *)data;
+    g_print("Button {%s} clicked!\n", f->name);
 }
 
 static GtkWidget *directory_list_button(TFileInfo *f) {
@@ -201,6 +201,9 @@ static GtkWidget *directory_list_button(TFileInfo *f) {
     gtk_label_set_xalign(GTK_LABEL(label), 0.0f);
     gtk_box_append(GTK_BOX(button_box), label);
     gtk_button_set_child(GTK_BUTTON(button), button_box);
+
+    g_signal_connect(button, "clicked", G_CALLBACK(on_button_clicked), f);
+
     return button;
 }
 
@@ -208,12 +211,14 @@ static void add_file_list_item(gpointer file, gpointer box) {
     gtk_box_append(GTK_BOX(box), directory_list_button((TFileInfo *)file));
 }
 
-static GtkWidget *directory_list() {
+static GtkWidget *directory_list(const char *path) {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-    GList *dir_names = get_home_contents();
+    GList *dir_names = get_directory_contents(path);
 
     g_list_foreach(dir_names, add_file_list_item, box);
-    g_clear_list(&dir_names, (GDestroyNotify)g_free);
+    //    g_clear_list(&dir_names,
+    //                 (GDestroyNotify)g_free);  // TODO not the right place.
+    //                 Also, is this the right way to free the TFileInfo struct?
 
     GtkWidget *sw = gtk_scrolled_window_new();
     gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(sw), box);
@@ -244,7 +249,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
 
     GtkWidget *image = gtk_image_new_from_file("assets/buppies.jpg");
-    gtk_window_set_child(GTK_WINDOW(window), directory_list());
+    gtk_window_set_child(GTK_WINDOW(window), directory_list("/"));
     gtk_window_present(GTK_WINDOW(window));
 }
 
